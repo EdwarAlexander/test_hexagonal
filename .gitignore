@@ -1,0 +1,27 @@
+# Archivos y directorios generados por el sistema
+target/
+bin/
+.idea/
+
+# Archivos de configuración específicos del entorno
+.classpath
+.project
+.settings/
+
+# Archivos de compilación y ejecución de Java
+*.class
+
+# Archivos de dependencias y caché de Maven
+.m2/
+
+# Archivos de compilación y ejecución de Gradle
+build/
+.gradle/
+
+# Logs y archivos temporales
+*.log
+*.swp
+*~
+
+# Archivos de configuración de Visual Studio Code
+.vscode/
