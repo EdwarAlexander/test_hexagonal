@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Date;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,14 +45,50 @@ class PersonaJPARepositoryAdapterTest {
     }
 
     @Test
-    void getPersona() {
+    void getPersona_IsEmpty() {
+        Mockito.when(personaJPARepository.findById(Mockito.any(Long.class))).thenReturn(Optional.empty());
+        Optional<Persona> persona = personaJPARepositoryAdapter.getPersona(1L);
+        assertTrue(persona.isEmpty());
+    }
+    @Test
+    void getPersona_ExistingId_ReturnsPersona() {
+        PersonaEntity personaEntity = new PersonaEntity(1L,"Paul","Rodriguez",new Date(),"Masculino");
+        Mockito.when(personaJPARepository.findById(Mockito.any(Long.class))).thenReturn(Optional.of(personaEntity));
+        Optional<Persona> persona = personaJPARepositoryAdapter.getPersona(1L);
+        assertEquals(persona.get().getId(),personaEntity.getId());
     }
 
     @Test
-    void updatePersona() {
+    void updatePersona_ExistingIdAndValidPersona_ReturnsUpdatedPersona() {
+        Persona persona = new Persona(1L,"Paul","Rodriguez",new Date(),"Masculino");
+        PersonaEntity personaEntity = new PersonaEntity(1L,"Paul","Rodriguez",new Date(),"Masculino");
+        Mockito.when(personaJPARepository.existsById(Mockito.any(Long.class))).thenReturn(true);
+        Mockito.when(personaJPARepository.save(Mockito.any(PersonaEntity.class))).thenReturn(personaEntity);
+        Optional<Persona> personaAdapter = personaJPARepositoryAdapter.updatePersona(1l,persona);
+        assertEquals(personaAdapter.get().getId(),personaEntity.getId());
     }
 
     @Test
-    void deletePersona() {
+    void updatePersona_NonExistingId_ReturnsEmptyOptional() {
+        Persona persona = new Persona(1L,"Paul","Rodriguez",new Date(),"Masculino");
+        Mockito.when(personaJPARepository.existsById(Mockito.any(Long.class))).thenReturn(false);
+        Optional<Persona> personaAdapter = personaJPARepositoryAdapter.updatePersona(2l,persona);
+        assertTrue(personaAdapter.isEmpty());
+    }
+
+    @Test
+    void deletePersona_NonExistingId_ReturnsFalse() {
+        Mockito.when(personaJPARepository.existsById(Mockito.any(Long.class))).thenReturn(false);
+        boolean rpta = personaJPARepositoryAdapter.deletePersona(1l);
+        assertFalse(rpta);
+        assertEquals(false,rpta);
+    }
+
+    @Test
+    void deletePersona_ExistingId_ReturnsTrue() {
+        Mockito.when(personaJPARepository.existsById(Mockito.any(Long.class))).thenReturn(true);
+        boolean rpta = personaJPARepositoryAdapter.deletePersona(1l);
+        assertTrue(rpta);
+        assertEquals(true,rpta);
     }
 }
